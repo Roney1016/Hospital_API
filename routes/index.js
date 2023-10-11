@@ -5,6 +5,8 @@ const router = express.Router();
 //home page
 router.get('/', controller.home)
 
+// doctor routes
+router.use('/doctors', require('./doctorRoutes'))
 
 
 module.exports = router;
