@@ -17,14 +17,15 @@ app.use(express.json());
 
 
 
+//********************     routes      ***************** */
+
+app.use('/', require('./routes/index'));
 
 
 
-
-
-app.get('/', function (req, res) {
-    return res.render('hospital')
-})
+// app.get('/', function (req, res) {
+//     return res.render('hospital')
+// })
 
 
 
