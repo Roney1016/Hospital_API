@@ -1,8 +1,10 @@
 
 const Doctor = require('../models/doctorModel');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-module.exports.doctorRegister = async function (req, resp) {            // Doctor Register
+//***************     doctor register  *********************/
+module.exports.doctorRegister = async function (req, resp) {
     try {
         const { name, password } = req.body;
         // Validate input data
@@ -39,3 +41,47 @@ module.exports.doctorRegister = async function (req, resp) {            // Docto
     }
 
 }
+
+//*********************   doctor login    *************************/
+module.exports.doctorLogin = async function (req, resp) {
+    try {
+        const { name, password } = req.body;
+        // Validate input data
+        if (!name || !password) {
+            return resp.status(400).json({ message: 'Missing required fields' })
+        }
+        // check if doctor with the provided name exists or not
+        const doctor = await Doctor.findOne({ name: req.body.name });
+        if (doctor) {
+
+            // Compare the provided password with the stored hashed password
+            const passwordMatch = await bcrypt.compare(password, doctor.password)
+
+            if (!passwordMatch) {
+                return resp.status(401).json({ message: 'Invalid username or password' })
+            }
+            // Generate a JWT token
+            const token = jwt.sign({ doctorName: name, doctorID: doctor._id }, 'theSceret', {
+                expiresIn: '1h', // token expires in 1 hour
+            });
+
+            // Return the JWT token to the client
+            return resp.status(200).json({
+                message: 'Login in successful',
+                doctorID: doctor._id,
+                Name: doctor.name,
+                data: {
+                    token,
+                },
+            });
+        } else {
+
+        }
+    } catch (error) {
+        console.error('Error login doctor:', error);
+        return resp.status(500).json({
+            message: 'Internal Server Error',
+        });
+    }
+}
+
