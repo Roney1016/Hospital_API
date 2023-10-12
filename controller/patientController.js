@@ -1,5 +1,7 @@
 const Patient = require('../models/patientModel');
-
+const Report = require('../models/reportModel');
+var moment = require('moment');
+moment().format();
 module.exports.patientRegister = async function (req, resp) {
     try {
         const { name, phone, city, addharNumber } = req.body;
@@ -42,4 +44,57 @@ module.exports.patientRegister = async function (req, resp) {
             message: 'Internal Server Error',
         })
     }
+}
+
+
+module.exports.createPatientReport = async function (req, resp) {
+    try {
+        //Extract the patient's ID from the url parameters
+        const patientId = req.params.id;
+        console.log(patientId)
+        //check if the patient exists
+        const patient = await Patient.findById(patientId);
+        if (!patient) {
+            return resp.status(404).json({ message: 'patient not found' })
+
+        }
+        let doctor = req.user;
+        // check doctor authorized or not
+        if (!doctor) {
+            return resp.status(401).json({ message: 'Doctor not found or unauthorized' });
+        }
+
+        //Extract report details from the req.body
+        const { status } = req.body;
+        if (!status) {
+            return resp.status(401).json({ message: 'Plz enter a status filed' });
+        }
+        console.log(doctor)
+        const reportData = {
+            createdByDoctorID: doctor.doctorID,
+            doctorName: doctor.doctorName,
+            patientID: patientId,
+            patientName: patient.name,
+            patientAadharNumber: patient.addharNumber,
+            status,
+            date: moment().format('MMMM Do YYYY, h:mm:ss a')
+        }
+
+        // create new report
+        const report = await Report.create(reportData);
+        await report.save();
+
+        //update the patient's reports array
+        patient.reports.push(report);
+        await patient.save();
+
+        return resp.status(201).json({
+            message: 'Patient report created successfully',
+            report: report
+        })
+    } catch (error) {
+        console.error('Error creating patient report:', error);
+        resp.status(500).json({ message: 'Internal Server Error' });
+    }
+
 }

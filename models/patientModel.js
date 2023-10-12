@@ -16,7 +16,13 @@ const patientSchema = new mongoose.Schema({
     addharNumber: {
         type: Number,
         required: true
-    }
+    },
+    reports: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Report',
+        }
+    ]
 }, {
     timestamps: true
 });
