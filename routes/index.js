@@ -10,4 +10,6 @@ router.use('/doctors', require('./doctorRoutes'))
 //patient routes
 router.use('/patients', require('./patientRoutes'))
 
+router.use('/reports', require('./reportRoutes'))
+
 module.exports = router;
