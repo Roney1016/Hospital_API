@@ -7,6 +7,7 @@ router.get('/', controller.home)
 
 // doctor routes
 router.use('/doctors', require('./doctorRoutes'))
-
+//patient routes
+router.use('/patients', require('./patientRoutes'))
 
 module.exports = router;
