@@ -1,4 +1,4 @@
-
+require('dotenv').config()
 const Doctor = require('../models/doctorModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -61,7 +61,7 @@ module.exports.doctorLogin = async function (req, resp) {
                 return resp.status(401).json({ message: 'Invalid username or password' })
             }
             // Generate a JWT token
-            const token = jwt.sign({ doctorName: name, doctorID: doctor._id }, 'theSceret', {
+            const token = jwt.sign({ doctorName: name, doctorID: doctor._id }, process.env.SECRET_KEY, {
                 expiresIn: '1h', // token expires in 1 hour
             });
 

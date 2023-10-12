@@ -1,3 +1,4 @@
+require('dotenv').config()
 const jwt = require('jsonwebtoken');
 module.exports = (req, resp, next) => {
     try {
@@ -10,7 +11,7 @@ module.exports = (req, resp, next) => {
         }
         const bearerToken = token.split(' ')[1];
         // Verify the JWT token  { ignoreExpiration: true }, 
-        jwt.verify(bearerToken, 'theSceret', (err, user) => {
+        jwt.verify(bearerToken, process.env.SECRET_KEY, (err, user) => {
             if (err) {
                 return resp.status(401).json({ message: 'Unauthorized - Invalid token' });
             }
