@@ -98,3 +98,34 @@ module.exports.createPatientReport = async function (req, resp) {
     }
 
 }
+
+//**************************    Get All Reports of patient ***********************************/
+
+module.exports.getAllReports = async function (req, resp) {
+    try {
+        const patientId = req.params.id;
+        //check if the patient exists
+        const patient = await Patient.findById(patientId);
+        if (!patient) {
+            return resp.status(404).json({ message: 'patient not found' })
+        }
+        // Find all reports for the specified patient, ordered by date
+        const reports = await Report.find({ patientID: patientId }).select('-updatedAt -createdAt -__v').sort({ date: 1 })
+
+        console.log(reports)
+        // No reports found for the specified patient
+        if (reports.length === 0) {
+            return resp.status(404).json({ message: `No reports found for patient with ID: ${patientId}` });
+        } else {
+            // Reports found for the specified patient
+            return resp.status(200).json({
+                message: `Get All Reports of User with id -  ${patientId}`,
+                reports: reports
+            });
+        }
+    } catch (error) {
+        console.error(error)
+        resp.status(500).json({ message: 'Internal Server error' });
+    }
+
+}

@@ -9,4 +9,6 @@ router.post('/register', patientController.patientRegister)
 
 router.post('/:id/create_report', verify, patientController.createPatientReport)
 
+router.get('/:id/all_reports', patientController.getAllReports)
+
 module.exports = router;
